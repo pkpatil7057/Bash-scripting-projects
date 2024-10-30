@@ -1,0 +1,19 @@
+#!/bin/bash
+
+LOG_DIR="/var/log/myapp"
+MAX_SIZE=10000000  # 10 MB
+
+# Rotate logs
+for log_file in $LOG_DIR/*.log; do
+    if [ -f "$log_file" ]; then
+        FILE_SIZE=$(stat -c%s "$log_file")
+        if [ $FILE_SIZE -gt $MAX_SIZE ]; then
+            mv "$log_file" "$log_file.bak"
+            echo "Rotated $log_file"
+        fi
+    fi
+done
+
+# Cleanup old backups
+find $LOG_DIR -name "*.bak" -mtime +30 -exec rm {} \;
+echo "Cleaned up old backups"
